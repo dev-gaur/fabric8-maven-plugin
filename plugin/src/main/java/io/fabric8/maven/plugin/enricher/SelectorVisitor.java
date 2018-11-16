@@ -25,6 +25,7 @@ import io.fabric8.kubernetes.api.model.apps.ReplicaSetSpecBuilder;
 import io.fabric8.kubernetes.api.model.apps.StatefulSetSpecBuilder;
 import io.fabric8.kubernetes.api.model.batch.JobSpecBuilder;
 import io.fabric8.maven.core.config.ProcessorConfig;
+import io.fabric8.maven.core.util.MapUtil;
 import io.fabric8.maven.enricher.api.Kind;
 
 /**
@@ -57,6 +58,7 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
         return ret;
     }
 
+
     // ========================================================================
 
     static class ServiceSpecBuilderVisitor extends SelectorVisitor<ServiceSpecBuilder> {
@@ -67,7 +69,7 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
 
         @Override
         public void visit(ServiceSpecBuilder item) {
-            item.getSelector().putAll(enricherManager.extractSelector(getConfig(), Kind.SERVICE));
+            MapUtil.mergeIfAbsent(item.getSelector(), enricherManager.extractSelector(getConfig(), Kind.SERVICE));
         }
     }
 
@@ -78,9 +80,10 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
 
         @Override
         public void visit(ReplicationControllerSpecBuilder item) {
-            item.getSelector().putAll(enricherManager.extractSelector(getConfig(), Kind.REPLICATION_CONTROLLER));
+            MapUtil.mergeIfAbsent(item.getSelector(), enricherManager.extractSelector(getConfig(), Kind.REPLICATION_CONTROLLER));
         }
     }
+
 
     // ============================================================================
 
@@ -98,7 +101,7 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
                 if (selector == null) {
                     item.withNewSelector().addToMatchLabels(selectorMatchLabels).endSelector();
                 } else {
-                    selector.getMatchLabels().putAll(selectorMatchLabels);
+                    MapUtil.mergeIfAbsent(selector.getMatchLabels(), selectorMatchLabels);
                 }
             }
         }
@@ -117,7 +120,7 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
             if (selector == null) {
                 item.withNewSelector().addToMatchLabels(selectorMatchLabels).endSelector();
             } else {
-                selector.getMatchLabels().putAll(selectorMatchLabels);
+                MapUtil.mergeIfAbsent(selector.getMatchLabels(), selectorMatchLabels);
             }
         }
     }
@@ -135,7 +138,7 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
             if (selector == null) {
                 item.withNewSelector().addToMatchLabels(selectorMatchLabels).endSelector();
             } else {
-                selector.getMatchLabels().putAll(selectorMatchLabels);
+                MapUtil.mergeIfAbsent(selector.getMatchLabels(), selectorMatchLabels);
             }
         }
     }
@@ -150,7 +153,7 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
             Map<String, String> selectorMatchLabels = enricherManager.extractSelector(getConfig(), Kind.JOB);
             final LabelSelector selector = item.buildSelector();
             if (selector != null) {
-                selector.getMatchLabels().putAll(selectorMatchLabels);
+                MapUtil.mergeIfAbsent(selector.getMatchLabels(), selectorMatchLabels);
             }
         }
     }
@@ -168,7 +171,7 @@ public abstract class SelectorVisitor<T> extends TypedVisitor<T> {
             if (selector == null) {
                 item.withNewSelector().addToMatchLabels(selectorMatchLabels).endSelector();
             } else {
-                selector.getMatchLabels().putAll(selectorMatchLabels);
+                MapUtil.mergeIfAbsent(selector.getMatchLabels(), selectorMatchLabels);
             }
         }
     }

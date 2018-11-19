@@ -39,6 +39,8 @@ After this we will switch probably to real [Semantic Versioning 2.0.0](http://se
 * Fix 314: Do not execute GitEnricher if not Git repo
 * Fix 714: Merges the functionality of IANAServicePortNameEnricher and PortNameEnricher.
 * Fix 963: add support for Pod resource type in yaml config.
+* Fix 1326: Fixes overriding of SpecSelector MatchLabel entries by the enrichers entries.
+
 ### 3.5.41 (2018-08-01)
 * Feature 1032: Improvements of the Vert.x Generator and enrichers
 * Fix 1313: Removed unused Maven goals. Please contact us if something's missing for you.

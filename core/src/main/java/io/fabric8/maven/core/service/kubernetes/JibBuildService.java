@@ -16,6 +16,7 @@
 package io.fabric8.maven.core.service.kubernetes;
 
 import io.fabric8.maven.core.service.BuildService;
+import io.fabric8.maven.docker.config.BuildImageConfiguration;
 import io.fabric8.maven.docker.config.ImageConfiguration;
 import io.fabric8.maven.docker.util.ImageName;
 import io.fabric8.maven.docker.util.Logger;
@@ -39,7 +40,8 @@ public class JibBuildService implements BuildService {
     @Override
     public void build(ImageConfiguration imageConfiguration) {
        try {
-           List<String> tags = imageConfiguration.getBuildConfiguration().getTags();
+           BuildImageConfiguration buildImageConfiguration = imageConfiguration.getBuildConfiguration();
+           List<String> tags = buildImageConfiguration.getTags();
 
            JibBuildConfiguration jibBuildConfiguration;
            String fullName = "";
@@ -53,7 +55,8 @@ public class JibBuildService implements BuildService {
                fullName = new ImageName(imageConfiguration.getName(), null).getFullName();
            }
            log.debug("Target Image creation and tagging succesfull!");
-           jibBuildConfiguration = JibBuildServiceUtil.getJibBuildConfiguration(config, imageConfiguration, fullName, log);
+
+           jibBuildConfiguration = JibBuildServiceUtil.getJibBuildConfiguration(config, buildImageConfiguration, fullName, log);
            JibBuildServiceUtil.buildImage(jibBuildConfiguration, log);
        } catch (Exception ex) {
            throw new UnsupportedOperationException();

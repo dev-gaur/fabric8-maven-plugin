@@ -139,9 +139,7 @@ public class JibBuildServiceUtil {
         }
         }
 
-    public static JibBuildConfiguration getJibBuildConfiguration(BuildService.BuildServiceConfig config, ImageConfiguration imageConfiguration, String fullImageName, Logger log) throws MojoExecutionException {
-
-        BuildImageConfiguration buildImageConfiguration = imageConfiguration.getBuildConfiguration();
+    public static JibBuildConfiguration getJibBuildConfiguration(BuildService.BuildServiceConfig config, BuildImageConfiguration buildImageConfiguration, String fullImageName, Logger log) throws MojoExecutionException {
 
         RegistryService.RegistryConfig registryConfig = config.getDockerBuildContext().getRegistryConfig();
 

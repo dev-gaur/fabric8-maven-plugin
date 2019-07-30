@@ -5,10 +5,15 @@ import io.fabric8.maven.docker.config.ImageConfiguration;
 import io.fabric8.maven.docker.service.BuildService;
 import io.fabric8.maven.docker.util.ImageName;
 import io.fabric8.maven.docker.util.Logger;
+import mockit.Expectations;
 import mockit.Mocked;
 import mockit.Tested;
 import mockit.VerificationsInOrder;
 import org.junit.Test;
+import io.fabric8.maven.core.service.BuildService.BuildServiceConfig;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class JibBuildServiceTest {
 
@@ -16,7 +21,10 @@ public class JibBuildServiceTest {
     private JibBuildService jibBuildService;
 
     @Mocked
-    private JibBuildServiceUtil jibBuildServiceUtil;
+    BuildServiceConfig config;
+
+    @Mocked
+    ImageConfiguration imageConfiguration;
 
     @Mocked
     private Logger logger;
@@ -28,27 +36,46 @@ public class JibBuildServiceTest {
         final BuildService.BuildContext context = new BuildService.BuildContext.Builder()
                 .build();
 
-        final io.fabric8.maven.core.service.BuildService.BuildServiceConfig config = new io.fabric8.maven.core.service.BuildService.BuildServiceConfig.Builder()
-                .dockerBuildContext(context)
-                .build();
 
+        /**
+
+         *                                                                                                         .ports(buildImageConfiguration.getPorts())
+         *                                                                                                         .entrypoint(buildImageConfiguration.getEntryPoint())
+         */
         final String imageName = "image-name";
-        final ImageConfiguration image = new ImageConfiguration.Builder()
-                .name(imageName)
-                .buildConfig(new BuildImageConfiguration.Builder()
-                        .from("from")
-                        .build()
-                ).build();
+        String fullName = new ImageName(imageName, null).getFullName();
 
-        String fullName = new ImageName(image.getName(), null).getFullName();
+
+        BuildImageConfiguration buildImageConfiguration = new BuildImageConfiguration.Builder()
+                        .from("fromImage")
+                .env(new HashMap<String, String>() {{
+                    put("foo", "bar");
+                    put("john", "doe");
+                }})
+                .ports(new ArrayList<String>() {{
+                    add("80");
+                    add("443");
+                }})
+                
+                        .build();
+
+
+
+        new Expectations() {{
+            imageConfiguration.getBuildConfiguration();
+            result = buildImageConfiguration;
+
+            imageConfiguration.getName();
+            result = fullName;
+        }};
 
         //Code To Be Tested
-         jibBuildService = new JibBuildService(config, logger);
-        jibBuildService.build(image);
+        jibBuildService = new JibBuildService(config, logger);
+        jibBuildService.build(imageConfiguration);
 
         new VerificationsInOrder() {{ // Verification Of The Executed Code To Be Tested
-           JibBuildConfiguration jibBuildConfiguration =  jibBuildServiceUtil.getJibBuildConfiguration(config, image, fullName, logger);
-            jibBuildServiceUtil.buildImage(jibBuildConfiguration, logger);
+//           JibBuildConfiguration jibBuildConfiguration =  jibBuildServiceUtil.getJibBuildConfiguration(config, image, fullName, logger);
+//            jibBuildServiceUtil.buildImage(jibBuildConfiguration, logger);
         }};
     }
 }
